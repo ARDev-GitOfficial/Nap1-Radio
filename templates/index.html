@@ -1,0 +1,7 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="inicio text-center">
+    <button class="botao-play" type="button" aria-label="Reproduzir Rádio Cipó">▶</button><br>
+    <a class="btn btn-info mt-4" href="{% url 'radio:pedidos' %}">Pedir uma música</a>
+</section>
+{% endblock %}

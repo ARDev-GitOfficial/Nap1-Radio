@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% block title %}Pedir música · Rádio Cipó{% endblock %}
+{% block content %}
+<div class="formulario">
+    <h1 class="text-center mb-4">Pedir música</h1>
+
+    {% if erro %}
+        <p class="erro text-center">{{ erro }}</p>
+    {% endif %}
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <div class="mb-3">
+            <label for="nome" class="form-label">Nome</label><input type="text" class="form-control" id="nome" name="nome_ouvinte" value="{{ dados.nome_ouvinte }}" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="localidade" class="form-label">De onde você fala?</label>
+            <input type="text" class="form-control" id="localidade" name="localidade" value="{{ dados.localidade }}" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="musica" class="form-label">Música</label>
+            <select class="form-select" id="musica" name="musica" required>
+                <option value="">Escolha uma música</option>
+                {% for musica in musicas %}
+                    <option value="{{ musica.id }}" {% if dados.musica == musica.id|stringformat:'s' %}selected{% endif %}>{{ musica.titulo }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label d-block">Contato</label>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="tipo_contato" id="telefone" value="telefone" {% if dados.tipo_contato == 'telefone' %}checked{% endif %} required><label class="form-check-label" for="telefone">Telefone</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="tipo_contato" id="email" value="email" {% if dados.tipo_contato == 'email' %}checked{% endif %} required>
+                    <label class="form-check-label" for="email">E-mail</label>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label for="contato" class="form-label">Telefone ou e-mail</label>
+            <input type="text" class="form-control" id="contato" name="contato" value="{{ dados.contato }}" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="mensagem" class="form-label">Mensagem</label>
+            <textarea class="form-control" id="mensagem" name="mensagem" rows="3">{{ dados.mensagem }}</textarea>
+        </div>
+
+        <div class="form-check mb-2"><input class="form-check-input" type="checkbox" id="politica" name="aceita_politica" {% if dados.aceita_politica %}checked{% endif %} required><label class="form-check-label" for="politica">Li e aceito a política de privacidade</label></div>
+        <div class="form-check mb-2">
+            <input class="form-check-input" type="checkbox" id="dados" name="confirma_dados" {% if dados.confirma_dados %}checked{% endif %} required>
+            <label class="form-check-label" for="dados">Confirmo que os dados estão corretos</label>
+        </div>
+        <div class="form-check mb-4">
+            <input class="form-check-input" type="checkbox" id="condicoes" name="aceita_condicoes" {% if dados.aceita_condicoes %}checked{% endif %} required>
+            <label class="form-check-label" for="condicoes">Aceito as condições do pedido musical</label>
+        </div>
+
+        <div class="text-center">
+            <button type="submit" class="btn btn-info">Enviar pedido</button>
+        </div>
+    </form>
+</div>
+{% endblock %}
