@@ -13,20 +13,24 @@
     <nav class="navbar navbar-dark">
         <div class="container navegacao">
             <a class="navbar-brand" href="{% url 'radio:index' %}"><img src="{% static 'imagens/logo-radio-cipo.png' %}" alt="Rádio Cipó"></a>
-            <div>
-                <a class="link-light me-3" href="{% url 'radio:index' %}">Início</a> <a class="link-light" href="{% url 'radio:pedidos' %}">Pedir música</a>
+            <div class="links-menu">
+                <a class="link-light" href="{% url 'radio:index' %}">Início</a>
+                <a class="link-light" href="{% url 'radio:pedidos' %}">Pedir música</a>
+                <a class="link-light" href="{% url 'radio:lista_pedidos' %}">Pedidos</a>
+                <a class="link-light" href="{% url 'radio:lista_musicas' %}">Músicas</a>
             </div>
         </div>
     </nav>
 
     <main class="container conteudo">
         {% for message in messages %}
-        <p class="mensagem text-center" role="status">{{ message }}</p>
+        <p class="mensagem mensagem-{{ message.tags }} text-center" role="status">{{ message }}</p>
         {% endfor %}
         {% block content %}{% endblock %}
     </main>
 
     <footer class="container text-center">Rádio Cipó</footer>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <script src="{% static 'js/app.js' %}"></script>
 </body>
 </html>

@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block title %}Músicas · Rádio Cipó{% endblock %}
+{% block content %}
+<div class="cabecalho-pagina">
+    <div><h1>Músicas</h1><p>Gerencie as opções disponíveis no formulário de pedidos.</p></div>
+    <a class="btn btn-info" href="{% url 'radio:nova_musica' %}">Nova música</a>
+</div>
+
+<div class="table-responsive">
+    <table class="table tabela-radio align-middle">
+        <thead><tr><th>Título</th><th>Ações</th></tr></thead>
+        <tbody>
+        {% for musica in musicas %}
+            <tr>
+                <td>{{ musica.titulo }}</td>
+                <td class="acoes">
+                    <a class="btn btn-sm btn-outline-info" href="{% url 'radio:editar_musica' musica.id %}">Editar</a>
+                    <form method="POST" action="{% url 'radio:excluir_musica' musica.id %}" class="d-inline confirmar-exclusao" data-item="a música {{ musica.titulo }}">
+                        {% csrf_token %}<button class="btn btn-sm btn-outline-danger" type="submit">Excluir</button>
+                    </form>
+                </td>
+            </tr>
+        {% empty %}
+            <tr><td colspan="2" class="text-center py-4">Nenhuma música cadastrada.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

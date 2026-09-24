@@ -16,6 +16,13 @@ body {
 
 .navegacao a { text-decoration: none; }
 
+.links-menu {
+    display: flex;
+    gap: 18px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
 .conteudo {
     max-width: 780px;
     min-height: calc(100vh - 165px);
@@ -46,6 +53,8 @@ body {
     margin: auto;
 }
 
+.formulario-curto { max-width: 480px; }
+
 .form-control,
 .form-select {
     background-color: #0B1628;
@@ -72,7 +81,43 @@ body {
 
 .mensagem { color: #8EC5FF; }
 
+.mensagem-error { color: #ffb5ac; }
+
 .erro { color: #ffb5ac; }
+
+.errorlist {
+    margin: 7px 0 0;
+    padding: 0;
+    list-style: none;
+    color: #ffb5ac;
+}
+
+.tipo-contato ul {
+    display: flex;
+    gap: 22px;
+    padding: 0;
+    list-style: none;
+}
+
+.tipo-contato label { cursor: pointer; }
+.tipo-contato input { margin-right: 5px; }
+
+.cabecalho-pagina {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 22px;
+    margin-bottom: 24px;
+}
+
+.cabecalho-pagina p { color: #aebed1; margin-bottom: 0; }
+
+.busca { display: flex; gap: 10px; }
+
+.tabela-radio { color: #edf3fb; border-color: #3e536e; }
+.tabela-radio thead { background-color: #172842; }
+.tabela-radio > :not(caption) > * > * { padding: .85rem; }
+.acoes { white-space: nowrap; }
 
 footer {
     padding-bottom: 18px;
@@ -93,4 +138,9 @@ footer {
     .navegacao div {
         margin-top: 8px;
     }
+
+    .links-menu { justify-content: center; gap: 12px; }
+    .cabecalho-pagina { display: block; }
+    .cabecalho-pagina .btn { margin-top: 10px; }
+    .busca { flex-wrap: wrap; }
 }

@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block title %}Pedidos recebidos · Rádio Cipó{% endblock %}
+{% block content %}
+<div class="cabecalho-pagina">
+    <div><h1>Pedidos recebidos</h1><p>Consulte, edite ou exclua os pedidos salvos no banco.</p></div>
+    <a class="btn btn-info" href="{% url 'radio:pedidos' %}">Novo pedido</a>
+</div>
+
+<form method="GET" class="busca mb-4" role="search">
+    <input class="form-control" type="search" name="busca" value="{{ busca }}" placeholder="Buscar pelo nome do ouvinte" aria-label="Buscar pedidos">
+    <button class="btn btn-outline-light" type="submit">Buscar</button>
+    {% if busca %}<a class="btn btn-link link-light" href="{% url 'radio:lista_pedidos' %}">Limpar</a>{% endif %}
+</form>
+
+<div class="table-responsive">
+    <table class="table tabela-radio align-middle">
+        <thead><tr><th>Ouvinte</th><th>Música</th><th>Localidade</th><th>Data</th><th>Ações</th></tr></thead>
+        <tbody>
+        {% for pedido in pedidos %}
+            <tr>
+                <td>{{ pedido.nome_ouvinte }}</td><td>{{ pedido.musica }}</td><td>{{ pedido.localidade }}</td><td>{{ pedido.data|date:'d/m/Y H:i' }}</td>
+                <td class="acoes">
+                    <a class="btn btn-sm btn-outline-info" href="{% url 'radio:editar_pedido' pedido.id %}">Editar</a>
+                    <form method="POST" action="{% url 'radio:excluir_pedido' pedido.id %}" class="d-inline confirmar-exclusao" data-item="o pedido de {{ pedido.nome_ouvinte }}">
+                        {% csrf_token %}<button class="btn btn-sm btn-outline-danger" type="submit">Excluir</button>
+                    </form>
+                </td>
+            </tr>
+        {% empty %}
+            <tr><td colspan="5" class="text-center py-4">Nenhum pedido encontrado.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block title %}{% if musica %}Editar música{% else %}Nova música{% endif %} · Rádio Cipó{% endblock %}
+{% block content %}
+<div class="formulario formulario-curto">
+    <h1 class="text-center mb-4">{% if musica %}Editar música{% else %}Nova música{% endif %}</h1>
+    <form method="POST">
+        {% csrf_token %}
+        <div class="mb-4">
+            <label for="{{ form.titulo.id_for_label }}" class="form-label">Título</label>
+            {{ form.titulo }}
+            {{ form.titulo.errors }}
+        </div>
+        <div class="text-center">
+            <button class="btn btn-info" type="submit">Salvar</button>
+            <a class="btn btn-outline-light ms-2" href="{% url 'radio:lista_musicas' %}">Cancelar</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

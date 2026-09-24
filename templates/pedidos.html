@@ -1,68 +1,59 @@
 {% extends 'base.html' %}
-{% block title %}Pedir música · Rádio Cipó{% endblock %}
+{% block title %}{% if pedido %}Editar pedido{% else %}Pedir música{% endif %} · Rádio Cipó{% endblock %}
 {% block content %}
 <div class="formulario">
-    <h1 class="text-center mb-4">Pedir música</h1>
+    <h1 class="text-center mb-4">{% if pedido %}Editar pedido{% else %}Pedir música{% endif %}</h1>
 
-    {% if erro %}
-        <p class="erro text-center">{{ erro }}</p>
-    {% endif %}
-
-    <form method="POST">
+    <form method="POST" novalidate>
         {% csrf_token %}
 
+        {% if form.non_field_errors %}
+        <div class="erro mb-3">{{ form.non_field_errors }}</div>
+        {% endif %}
+
         <div class="mb-3">
-            <label for="nome" class="form-label">Nome</label><input type="text" class="form-control" id="nome" name="nome_ouvinte" value="{{ dados.nome_ouvinte }}" required>
+            <label for="{{ form.nome_ouvinte.id_for_label }}" class="form-label">Nome</label>
+            {{ form.nome_ouvinte }}
+            {{ form.nome_ouvinte.errors }}
         </div>
 
         <div class="mb-3">
-            <label for="localidade" class="form-label">De onde você fala?</label>
-            <input type="text" class="form-control" id="localidade" name="localidade" value="{{ dados.localidade }}" required>
+            <label for="{{ form.localidade.id_for_label }}" class="form-label">De onde você fala?</label>
+            {{ form.localidade }}
+            {{ form.localidade.errors }}
         </div>
 
         <div class="mb-3">
-            <label for="musica" class="form-label">Música</label>
-            <select class="form-select" id="musica" name="musica" required>
-                <option value="">Escolha uma música</option>
-                {% for musica in musicas %}
-                    <option value="{{ musica.id }}" {% if dados.musica == musica.id|stringformat:'s' %}selected{% endif %}>{{ musica.titulo }}</option>
-                {% endfor %}
-            </select>
+            <label for="{{ form.musica.id_for_label }}" class="form-label">Música</label>
+            {{ form.musica }}
+            {{ form.musica.errors }}
+        </div>
+
+        <div class="mb-3 tipo-contato">
+            <span class="form-label d-block">Contato</span>
+            {{ form.tipo_contato }}
+            {{ form.tipo_contato.errors }}
         </div>
 
         <div class="mb-3">
-            <label class="form-label d-block">Contato</label>
-            <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="tipo_contato" id="telefone" value="telefone" {% if dados.tipo_contato == 'telefone' %}checked{% endif %} required><label class="form-check-label" for="telefone">Telefone</label>
-            </div>
-            <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="tipo_contato" id="email" value="email" {% if dados.tipo_contato == 'email' %}checked{% endif %} required>
-                    <label class="form-check-label" for="email">E-mail</label>
-            </div>
+            <label for="{{ form.contato.id_for_label }}" class="form-label" id="label-contato">Telefone ou e-mail</label>
+            {{ form.contato }}
+            {{ form.contato.errors }}
         </div>
 
         <div class="mb-3">
-            <label for="contato" class="form-label">Telefone ou e-mail</label>
-            <input type="text" class="form-control" id="contato" name="contato" value="{{ dados.contato }}" required>
+            <label for="{{ form.mensagem.id_for_label }}" class="form-label">Mensagem</label>
+            {{ form.mensagem }}
+            {{ form.mensagem.errors }}
         </div>
 
-        <div class="mb-3">
-            <label for="mensagem" class="form-label">Mensagem</label>
-            <textarea class="form-control" id="mensagem" name="mensagem" rows="3">{{ dados.mensagem }}</textarea>
-        </div>
-
-        <div class="form-check mb-2"><input class="form-check-input" type="checkbox" id="politica" name="aceita_politica" {% if dados.aceita_politica %}checked{% endif %} required><label class="form-check-label" for="politica">Li e aceito a política de privacidade</label></div>
-        <div class="form-check mb-2">
-            <input class="form-check-input" type="checkbox" id="dados" name="confirma_dados" {% if dados.confirma_dados %}checked{% endif %} required>
-            <label class="form-check-label" for="dados">Confirmo que os dados estão corretos</label>
-        </div>
-        <div class="form-check mb-4">
-            <input class="form-check-input" type="checkbox" id="condicoes" name="aceita_condicoes" {% if dados.aceita_condicoes %}checked{% endif %} required>
-            <label class="form-check-label" for="condicoes">Aceito as condições do pedido musical</label>
-        </div>
+        <div class="form-check mb-2">{{ form.aceita_politica }} <label class="form-check-label" for="{{ form.aceita_politica.id_for_label }}">Li e aceito a política de privacidade</label></div>
+        <div class="form-check mb-2">{{ form.confirma_dados }} <label class="form-check-label" for="{{ form.confirma_dados.id_for_label }}">Confirmo que os dados estão corretos</label></div>
+        <div class="form-check mb-4">{{ form.aceita_condicoes }} <label class="form-check-label" for="{{ form.aceita_condicoes.id_for_label }}">Aceito as condições do pedido musical</label></div>
 
         <div class="text-center">
-            <button type="submit" class="btn btn-info">Enviar pedido</button>
+            <button type="submit" class="btn btn-info">{% if pedido %}Salvar alterações{% else %}Enviar pedido{% endif %}</button>
+            {% if pedido %}<a class="btn btn-outline-light ms-2" href="{% url 'radio:lista_pedidos' %}">Cancelar</a>{% endif %}
         </div>
     </form>
 </div>

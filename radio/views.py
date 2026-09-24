@@ -1,10 +1,8 @@
-import re
-
 from django.contrib import messages
-from django.core.exceptions import ValidationError
-from django.core.validators import validate_email
-from django.shortcuts import redirect, render
+from django.db.models import ProtectedError
+from django.shortcuts import get_object_or_404, redirect, render
 
+from .forms import MusicaForm, PedidoMusicalForm
 from .models import Musica, PedidoMusical
 
 
@@ -12,46 +10,69 @@ def index(request): return render(request, 'index.html')
 
 
 def pedidos(request):
-    musicas = Musica.objects.all()
-    erro = ''
+    form = PedidoMusicalForm(request.POST or None)
+    if request.method == 'POST' and form.is_valid():
+        form.save()
+        messages.success(request, 'Pedido enviado com sucesso!')
+        return redirect('radio:pedidos')
+    return render(request, 'pedidos.html', {'form': form})
 
+
+def lista_pedidos(request):
+    termo = request.GET.get('busca', '').strip()
+    lista = PedidoMusical.objects.select_related('musica')
+    if termo:
+        lista = lista.filter(nome_ouvinte__icontains=termo)
+    return render(request, 'lista_pedidos.html', {'pedidos': lista, 'busca': termo})
+
+
+def editar_pedido(request, pedido_id):
+    pedido = get_object_or_404(PedidoMusical, id=pedido_id)
+    form = PedidoMusicalForm(request.POST or None, instance=pedido)
+    if request.method == 'POST' and form.is_valid():
+        form.save()
+        messages.success(request, 'Pedido atualizado com sucesso!')
+        return redirect('radio:lista_pedidos')
+    return render(request, 'pedidos.html', {'form': form, 'pedido': pedido})
+
+
+def excluir_pedido(request, pedido_id):
+    pedido = get_object_or_404(PedidoMusical, id=pedido_id)
     if request.method == 'POST':
-        nome = request.POST.get('nome_ouvinte', '').strip(); localidade = request.POST.get('localidade', '').strip()
-        musica_id = request.POST.get('musica'); tipo = request.POST.get('tipo_contato')
-        contato = request.POST.get('contato', '').strip()
-        mensagem = request.POST.get('mensagem', '').strip()
+        pedido.delete()
+        messages.success(request, 'Pedido excluído com sucesso!')
+    return redirect('radio:lista_pedidos')
 
-        if not nome or not localidade or not musica_id or tipo not in ['telefone', 'email'] or not contato:
-            erro = 'Preencha os campos obrigatórios.'
-        elif not all(request.POST.get(campo) for campo in ['aceita_politica', 'confirma_dados', 'aceita_condicoes']):
-            erro = 'Marque as três confirmações.'
-        elif tipo == 'email':
-            try:
-                validate_email(contato)
-            except ValidationError:
-                erro = 'Digite um e-mail válido.'
-        elif not re.fullmatch(r'[\d\s()+-]{8,20}', contato) or len(''.join(numero for numero in contato if numero.isdigit())) < 8:
-            erro = 'Digite um telefone válido.'
 
+def lista_musicas(request):
+    return render(request, 'lista_musicas.html', {'musicas': Musica.objects.all()})
+
+
+def nova_musica(request):
+    form = MusicaForm(request.POST or None)
+    if request.method == 'POST' and form.is_valid():
+        form.save()
+        messages.success(request, 'Música cadastrada com sucesso!')
+        return redirect('radio:lista_musicas')
+    return render(request, 'form_musica.html', {'form': form})
+
+
+def editar_musica(request, musica_id):
+    musica = get_object_or_404(Musica, id=musica_id)
+    form = MusicaForm(request.POST or None, instance=musica)
+    if request.method == 'POST' and form.is_valid():
+        form.save()
+        messages.success(request, 'Música atualizada com sucesso!')
+        return redirect('radio:lista_musicas')
+    return render(request, 'form_musica.html', {'form': form, 'musica': musica})
+
+
+def excluir_musica(request, musica_id):
+    musica = get_object_or_404(Musica, id=musica_id)
+    if request.method == 'POST':
         try:
-            musica = Musica.objects.filter(id=musica_id).first() if musica_id else None
-        except (TypeError, ValueError):
-            musica = None
-        if not erro and not musica: erro = 'Escolha uma música.'
-
-        if not erro:
-            PedidoMusical.objects.create(
-                nome_ouvinte=nome,
-                localidade=localidade,
-                musica=musica,
-                tipo_contato=tipo,
-                contato=contato,
-                mensagem=mensagem,
-                aceita_politica=True,
-                confirma_dados=True,
-                aceita_condicoes=True,
-            )
-            messages.success(request, 'Pedido enviado com sucesso!')
-            return redirect('radio:pedidos')
-
-    return render(request, 'pedidos.html', {'musicas': musicas, 'erro': erro, 'dados': request.POST})
+            musica.delete()
+            messages.success(request, 'Música excluída com sucesso!')
+        except ProtectedError:
+            messages.error(request, 'Essa música possui pedidos e não pode ser excluída.')
+    return redirect('radio:lista_musicas')
